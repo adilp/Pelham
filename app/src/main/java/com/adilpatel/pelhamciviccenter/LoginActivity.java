@@ -24,6 +24,16 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.adilpatel.pelhamciviccenter.app.AppController;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -253,13 +263,23 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final String mEmail;
-        private final String mPassword;
+        //private String urlJsonObj = "http://10.0.2.2:3000/authentication/";
+
+        private String mEmail = null;
+        private String mPassword = null;
+
+        // String jSonReply;
 
         UserLoginTask(String email, String password) {
             mEmail = email;
             mPassword = password;
+
+
         }
+
+        String urlJsonObj = "http://10.0.2.2:3000/authentication/" + mEmail +"/" + mPassword;
+
+
 
         @Override
         protected Boolean doInBackground(Void... params) {
@@ -271,6 +291,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             } catch (InterruptedException e) {
                 return false;
             }
+
+
+//            Toast.makeText(getApplicationContext(),
+//                    jSonReply,
+//                    Toast.LENGTH_LONG).show();
+
 
             for (String credential : DUMMY_CREDENTIALS) {
                 String[] pieces = credential.split(":");
@@ -289,6 +315,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = null;
             showProgress(false);
 
+            makeJsonObjectRequest(urlJsonObj);
+
             if (success) {
                 finish();
                 Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
@@ -304,6 +332,56 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = null;
             showProgress(false);
         }
+    }
+
+    private void makeJsonObjectRequest(String urlJsonObj) {
+
+
+
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET,
+                urlJsonObj, null, new Response.Listener<JSONObject>() {
+
+            @Override
+            public void onResponse(JSONObject response) {
+
+                Toast.makeText(getApplicationContext(), "msg msg", Toast.LENGTH_LONG).show();
+
+
+                try {
+                    // Parsing json object response
+                    // response will be a json object
+                   String jSonReply = response.getString("result");
+
+                    if (jSonReply == "true"){
+                        Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
+                        LoginActivity.this.startActivity(myIntent);
+                    } else{
+                        Toast.makeText(getApplicationContext(), "Login Failed", Toast.LENGTH_LONG).show();
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(),
+                            "Error: " + e.getMessage(),
+                            Toast.LENGTH_LONG).show();
+                }
+                // pDialog.dismiss();;
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //VolleyLog.d(TAG, "Error: " + error.getMessage());
+                Toast.makeText(getApplicationContext(),
+                        error.getMessage(), Toast.LENGTH_LONG).show();
+                // hide the progress dialog
+                //pDialog.dismiss();
+            }
+        });
+
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(jsonObjReq);
     }
 }
 

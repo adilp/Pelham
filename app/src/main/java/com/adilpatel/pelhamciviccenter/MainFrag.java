@@ -3,6 +3,7 @@ package com.adilpatel.pelhamciviccenter;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,10 +13,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.adilpatel.pelhamciviccenter.app.AppController;
+import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,12 +38,19 @@ public class MainFrag extends Fragment {
 
     private static String TAG = MainActivity.class.getSimpleName();
     // json object response url
-    private String urlJsonObj = "http://10.0.2.2:3000/api/schedule/hockey/pickup";
+    private String urlJsonObj = "http://52.87.213.45:3000/api/schedule/hockey/pickup";
 
 
     // json array response url
-    private String urlJsonArryPickup = "http://10.0.2.2:3000/api/schedule/hockey/pickup";
-    private String urlJsonArryStickPuck = "http://10.0.2.2:3000/api/schedule/hockey/stickpuck";
+    private String urlJsonArryPickup = "http://52.87.213.45:3000/api/schedule/hockey/pickup";
+    private String urlJsonArryStickPuck = "http://52.87.213.45:3000/api/schedule/hockey/stickpuck";
+    private String urlJsonPickUpSpotsTotal = "http://52.87.213.45:3000/SpotsLeft";
+    private String urlJsonStickUpSpotsTotal = "http://52.87.213.45:3000/SpotsLeftStickPuck";
+    private String urlJsonPickUpReserveSpot = "http://52.87.213.45:3000/ReservePickUpSpot";
+    private String urlJsonStickPuckReserveSpot = "http://52.87.213.45:3000/ReserveStickPuck";
+
+
+
     private ProgressDialog pDialog;
 
     private TextView pickupDateLabel;
@@ -49,10 +59,15 @@ public class MainFrag extends Fragment {
     private TextView stickPuckDateLabel;
     private TextView stickPuckTimeLabel;
     private TextView stickPuckSpotsLabel;
-
     private String jsonTime;
     private String jsonDate;
     private String jsonSpots;
+
+    private String jsonReply;
+    private String jsonReply2;
+    private String spots;
+
+
     /**
      * Returns a new instance of this fragment for the given section
      * number.
@@ -90,76 +105,143 @@ public class MainFrag extends Fragment {
 
         makeJsonArrayRequest(urlJsonArryPickup);
         makeJsonArrayRequest(urlJsonArryStickPuck);
+        makeJsonObjectRequest(urlJsonPickUpSpotsTotal);
+        makeJsonObjectRequest(urlJsonStickUpSpotsTotal);
+
+
+
+
+
+       // spots = jsonReply; //- Integer.parseInt(jsonReply2);
+
+        //pickupSpotsLabel.setText(spots);
+
+//                Toast.makeText(getActivity(), "Spots: "+spots,
+//                Toast.LENGTH_LONG).show();
 
         CardView pickupCard;
+        CardView stickPuckCard;
 
         pickupCard = (CardView) rootView.findViewById(R.id.mPickupCard);
+        stickPuckCard = (CardView)rootView.findViewById(R.id.mStickPuckCard);
+
+
+        stickPuckCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                makeJsonArrayRequest(urlJsonStickPuckReserveSpot);
+                refresh();
+
+                // Created a new Dialog
+               // Dialog dialog = new Dialog(getActivity());
+
+                // Set the title
+                //dialog.setTitle("Reserve A Spot for Stick and Puck");
+
+                // inflate the layout
+                //dialog.setContentView(R.layout.payment_dialog_frag);
+
+                // Display the dialog
+                //dialog.show();
+
+
+                Toast.makeText(getActivity(), "Reserved",
+                        Toast.LENGTH_LONG).show();
+
+            }
+
+
+        });
+
 
         pickupCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "this is my Toast message!!! =)",
+
+
+                makeJsonArrayRequest(urlJsonPickUpReserveSpot);
+                refresh();
+
+
+                Toast.makeText(getActivity(), "Reserved",
                         Toast.LENGTH_LONG).show();
+
             }
+
+
         });
 
         return rootView;
     }
 
-//    private void makeJsonObjectRequest() {
-//
-//
-//
-//        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET,
-//                urlJsonObj, null, new Response.Listener<JSONObject>() {
-//
-//            @Override
-//            public void onResponse(JSONObject response) {
-//                Log.d(TAG, response.toString());
-//                Toast.makeText(getActivity(), "msg msg", Toast.LENGTH_LONG).show();
-//
-//
-//                try {
-//                    // Parsing json object response
-//                    // response will be a json object
-//                    String date = response.getString("date");
-//                    String time = response.getString("time");
-//
-//                    //JSONObject phone = response.getJSONObject("phone");
-//                   // String home = phone.getString("home");
-//                   // String mobile = phone.getString("mobile");
-//
-//                    jsonResponse = "";
-//                    jsonResponse += date + "\n\n";
-//                    jsonResponse += time + "\n\n";
-////                    jsonResponse += "Home: " + home + "\n\n";
-////                    jsonResponse += "Mobile: " + mobile + "\n\n";
-//
-//                    pickupDateLabel.setText(jsonResponse);
-//
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
+    private void refresh(){
+
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.detach(this).attach(this).commit();
+    }
+
+    private void makeJsonObjectRequest(final String urlJsonObj) {
+
+
+
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET,
+                urlJsonObj, null, new Response.Listener<JSONObject>() {
+
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d(TAG, response.toString());
+                //Toast.makeText(getActivity(), "msg msg", Toast.LENGTH_LONG).show();
+
+
+                try {
+                    // Parsing json object response
+                    // response will be a json object
+
+                    jsonReply = response.getString("spots");
+
+                    if (urlJsonObj == "http://52.87.213.45:3000/SpotsLeftStickPuck"){
+
+                        //pickupSpotsLabel.setText(jsonReply);
+                        stickPuckSpotsLabel.setText(jsonReply);
+
+                    }
+
+
+                    if (urlJsonObj == "http://52.87.213.45:3000/SpotsLeft") {
+
+                        pickupSpotsLabel.setText(jsonReply);
+
+                    }
+
+
+
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
 //                    Toast.makeText(getActivity(),
 //                            "Error: " + e.getMessage(),
 //                            Toast.LENGTH_LONG).show();
-//                }
-//                // pDialog.dismiss();;
-//            }
-//        }, new Response.ErrorListener() {
-//
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//                VolleyLog.d(TAG, "Error: " + error.getMessage());
+                }
+                // pDialog.dismiss();;
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d(TAG, "Error: " + error.getMessage());
 //                Toast.makeText(getActivity(),
 //                        error.getMessage(), Toast.LENGTH_LONG).show();
-//                // hide the progress dialog
-//                //pDialog.dismiss();
-//            }
-//        });
-//
-//        // Adding request to request queue
-//        AppController.getInstance().addToRequestQueue(jsonObjReq);
-//    }
+                // hide the progress dialog
+                //pDialog.dismiss();
+            }
+        });
+
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(jsonObjReq);
+    }
 
     /**
      * Method to make json array request where response starts with [
@@ -200,17 +282,17 @@ public class MainFrag extends Fragment {
                             }
 
 
-                            if (urlJsonArry == "http://10.0.2.2:3000/api/schedule/hockey/pickup"){
+                            if (urlJsonArry == "http://52.87.213.45:3000/api/schedule/hockey/pickup"){
 
                                 pickupTimeLabel.setText(jsonTime);
                                  pickupDateLabel.setText(jsonDate);
-                                 pickupSpotsLabel.setText(jsonSpots);
+                                 //pickupSpotsLabel.setText(jsonSpots);
                             }
 
-                            if (urlJsonArry == "http://10.0.2.2:3000/api/schedule/hockey/stickpuck"){
+                            if (urlJsonArry == "http://52.87.213.45:3000/api/schedule/hockey/stickpuck"){
                                 stickPuckTimeLabel.setText(jsonTime);
                                 stickPuckDateLabel.setText(jsonDate);
-                                stickPuckSpotsLabel.setText(jsonSpots);
+                                //stickPuckSpotsLabel.setText(jsonSpots);
                             }
 
                         } catch (JSONException e) {
