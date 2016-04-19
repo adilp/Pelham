@@ -31,17 +31,17 @@ public class Contact extends Fragment {
         //connecting the fragment to our layout, new_frag
         View rootView = inflater.inflate(R.layout.fragment_contact, container, false);
         //then the btn and the textview
-        button2 = (Button) rootView.findViewById(R.id.button2);
+        //button2 = (Button) rootView.findViewById(R.id.button2);
         daveText = (TextView) rootView.findViewById(R.id.textView2);
 
-        button2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(daveText.getText().toString().contains("Hello Dave")){
-                    daveText.setText("I'm sorry Dave I can't do that.");
-                }else daveText.setText("Hello Dave");
-            }
-        });
+//        button2.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if(daveText.getText().toString().contains("Hello Dave")){
+//                    daveText.setText("I'm sorry Dave I can't do that.");
+//                }else daveText.setText("Hello Dave");
+//            }
+//        });
         // return our View
         return rootView;
     }

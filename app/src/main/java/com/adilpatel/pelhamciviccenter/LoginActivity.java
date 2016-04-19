@@ -344,7 +344,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             @Override
             public void onResponse(JSONObject response) {
 
-                Toast.makeText(getApplicationContext(), "msg msg", Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(), "msg msg", Toast.LENGTH_LONG).show();
 
 
                 try {
@@ -362,9 +362,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Toast.makeText(getApplicationContext(),
-                            "Error: " + e.getMessage(),
-                            Toast.LENGTH_LONG).show();
+//                    Toast.makeText(getApplicationContext(),
+//                            "Error: " + e.getMessage(),
+//                            Toast.LENGTH_LONG).show();
                 }
                 // pDialog.dismiss();;
             }
@@ -373,8 +373,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             @Override
             public void onErrorResponse(VolleyError error) {
                 //VolleyLog.d(TAG, "Error: " + error.getMessage());
-                Toast.makeText(getApplicationContext(),
-                        error.getMessage(), Toast.LENGTH_LONG).show();
+//                Toast.makeText(getApplicationContext(),
+//                        error.getMessage(), Toast.LENGTH_LONG).show();
                 // hide the progress dialog
                 //pDialog.dismiss();
             }

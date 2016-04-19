@@ -1,6 +1,8 @@
 package com.adilpatel.pelhamciviccenter;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -66,6 +68,7 @@ public class MainFrag extends Fragment {
     private String jsonReply;
     private String jsonReply2;
     private String spots;
+    private boolean flag;
 
 
     /**
@@ -121,9 +124,40 @@ public class MainFrag extends Fragment {
 
         CardView pickupCard;
         CardView stickPuckCard;
+        CardView publicCard;
 
         pickupCard = (CardView) rootView.findViewById(R.id.mPickupCard);
         stickPuckCard = (CardView)rootView.findViewById(R.id.mStickPuckCard);
+        publicCard = (CardView)rootView.findViewById(R.id.mPublicSkateCard);
+
+        publicCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+               // makeJsonArrayRequest(urlJsonStickPuckReserveSpot);
+                refresh();
+
+                // Created a new Dialog
+                // Dialog dialog = new Dialog(getActivity());
+
+                // Set the title
+                //dialog.setTitle("Reserve A Spot for Stick and Puck");
+
+                // inflate the layout
+                //dialog.setContentView(R.layout.payment_dialog_frag);
+
+                // Display the dialog
+                //dialog.show();
+
+
+                Toast.makeText(getActivity(), "Reserved",
+                        Toast.LENGTH_LONG).show();
+
+            }
+
+
+        });
 
 
         stickPuckCard.setOnClickListener(new View.OnClickListener() {
@@ -173,6 +207,23 @@ public class MainFrag extends Fragment {
 
         });
 
+        if (flag == false) {
+
+            AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
+            alertDialog.setTitle("Welcome!");
+            alertDialog.setMessage("To reserve a spot just click on the activity!");
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            alertDialog.show();
+
+            flag = true;
+
+        }
+
         return rootView;
     }
 
@@ -180,6 +231,9 @@ public class MainFrag extends Fragment {
 
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.detach(this).attach(this).commit();
+
+        Toast.makeText(getActivity(), "Refreshed",
+                Toast.LENGTH_LONG).show();
     }
 
     private void makeJsonObjectRequest(final String urlJsonObj) {
@@ -297,9 +351,9 @@ public class MainFrag extends Fragment {
 
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            Toast.makeText(getActivity(),
-                                    "Error: " + e.getMessage(),
-                                    Toast.LENGTH_LONG).show();
+//                            Toast.makeText(getActivity(),
+//                                    "Error: " + e.getMessage(),
+//                                    Toast.LENGTH_LONG).show();
                         }
 
 
@@ -308,8 +362,8 @@ public class MainFrag extends Fragment {
             @Override
             public void onErrorResponse(VolleyError error) {
                 VolleyLog.d(TAG, "Error: " + error.getMessage());
-                Toast.makeText(getActivity(),
-                        error.getMessage(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getActivity(),
+//                        error.getMessage(), Toast.LENGTH_SHORT).show();
 
             }
         });
